@@ -12,3 +12,7 @@ export function runCommand(command, options = {}) {
     },
   });
 }
+
+export async function runCommandAsync(command, options = {}) {
+  return runCommand(command, options);
+}
