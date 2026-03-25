@@ -11,7 +11,7 @@ export async function createProject({ projectName, projectPath, template, featur
   const generated = builder({ features, components });
 
   logStep("Scaffolding the Vite app...");
-  await runCommandAsPromise(`npm create vite@latest --yes ${projectName} -- --template ${viteTemplate}`, { stdio: "inherit" });
+  await runCommandAsPromise(`npm create vite@latest ${projectName} -- --template ${viteTemplate}`, { stdio: "inherit" });
 
   logStep("Writing starter files...");
   removePaths(projectPath, [
