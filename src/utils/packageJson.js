@@ -17,6 +17,7 @@ export function updatePackageJson(projectPath, template, features) {
   packageJson.scripts = {
     ...packageJson.scripts,
     dev: "vite",
+    start: "vite",
     build: template === "ts" ? "tsc -b && vite build" : "vite build",
     preview: "vite preview",
   };

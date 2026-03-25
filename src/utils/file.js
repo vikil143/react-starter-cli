@@ -11,9 +11,14 @@ export function writeFile(targetPath, content) {
 }
 
 export function writeFiles(basePath, files) {
+  const writtenFiles = [];
+
   for (const [relativePath, content] of Object.entries(files)) {
     writeFile(path.join(basePath, relativePath), content);
+    writtenFiles.push(relativePath);
   }
+
+  return writtenFiles;
 }
 
 export function removePaths(basePath, relativePaths) {
@@ -28,5 +33,15 @@ export function removePaths(basePath, relativePaths) {
 export function ensureDirectories(basePath, relativePaths) {
   for (const relativePath of relativePaths) {
     ensureDir(path.join(basePath, relativePath));
+  }
+}
+
+export function verifyFiles(basePath, relativePaths) {
+  const missingFiles = relativePaths.filter((relativePath) => !fs.existsSync(path.join(basePath, relativePath)));
+
+  if (missingFiles.length > 0) {
+    throw new Error(
+      `Starter files were not written correctly. Missing files: ${missingFiles.join(", ")}.`
+    );
   }
 }

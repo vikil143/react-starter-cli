@@ -8,6 +8,10 @@ export function logStep(message) {
   console.log(chalk.yellow(`${message}\n`));
 }
 
+export function logInfo(message) {
+  console.log(chalk.gray(message));
+}
+
 export function printSuccess({ projectName, features, components, installSkipped }) {
   console.log(chalk.green("\nProject created successfully.\n"));
 
@@ -24,7 +28,8 @@ export function printSuccess({ projectName, features, components, installSkipped
   if (installSkipped) {
     console.log("  npm install");
   }
-  console.log("  npm run dev\n");
+  console.log("  npm run dev");
+  console.log("  npm start\n");
 }
 
 export function printError(error) {

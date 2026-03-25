@@ -1,8 +1,8 @@
 import { buildJavaScriptTemplate } from "../templates/js/index.js";
 import { buildTypeScriptTemplate } from "../templates/ts/index.js";
 import { runCommand } from "../utils/exec.js";
-import { ensureDirectories, removePaths, writeFiles } from "../utils/file.js";
-import { logStep } from "../utils/logger.js";
+import { ensureDirectories, removePaths, verifyFiles, writeFiles } from "../utils/file.js";
+import { logInfo, logStep } from "../utils/logger.js";
 import { updatePackageJson } from "../utils/packageJson.js";
 
 export async function createProject({ projectName, projectPath, template, features, components, skipInstall }) {
@@ -11,7 +11,7 @@ export async function createProject({ projectName, projectPath, template, featur
   const generated = builder({ features, components });
 
   logStep("Scaffolding the Vite app...");
-  runCommand(`npm create vite@latest ${projectName} -- --template ${viteTemplate}`);
+  runCommand(`npm create vite@latest --yes ${projectName} -- --template ${viteTemplate}`);
 
   logStep("Writing starter files...");
   removePaths(projectPath, [
@@ -22,8 +22,10 @@ export async function createProject({ projectName, projectPath, template, featur
     "eslint.config.js",
   ]);
   ensureDirectories(projectPath, generated.directories);
-  writeFiles(projectPath, generated.files);
+  const writtenFiles = writeFiles(projectPath, generated.files);
+  verifyFiles(projectPath, writtenFiles);
   updatePackageJson(projectPath, template, features);
+  logInfo(`Injected ${writtenFiles.length} starter files.`);
 
   if (!skipInstall) {
     logStep("Installing dependencies...");

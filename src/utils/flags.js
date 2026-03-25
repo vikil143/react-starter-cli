@@ -1,5 +1,5 @@
 import { COMPONENT_KEYS, COMPONENT_LABELS } from "../config/components.js";
-import { FEATURE_KEYS, FEATURE_LABELS } from "../config/features.js";
+import { FEATURE_KEYS } from "../config/features.js";
 
 const FEATURE_SET = new Set(FEATURE_KEYS);
 const COMPONENT_SET = new Set(COMPONENT_KEYS);
@@ -8,6 +8,9 @@ export function parseFlagSelections(flags) {
   const template = resolveTemplate(flags);
   const features = resolveFeatures(flags);
   const components = resolveComponents(flags.components);
+  const hasExplicitFeatureSelection = Boolean(flags.all || flags.features || features.length > 0);
+  const hasExplicitTemplateSelection = Boolean(flags.template || flags.js || flags.ts);
+  const hasExplicitComponentSelection = flags.components !== undefined;
 
   return {
     template,
@@ -15,6 +18,9 @@ export function parseFlagSelections(flags) {
     components,
     skipInstall: Boolean(flags.skipInstall),
     interactive: Boolean(flags.interactive),
+    hasExplicitFeatureSelection,
+    hasExplicitTemplateSelection,
+    hasExplicitComponentSelection,
   };
 }
 
