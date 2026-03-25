@@ -10,33 +10,24 @@ const ESLINT_PACKAGES = [
   "typescript-eslint",
 ];
 
-export function readPackageJson(projectPath) {
+export function updatePackageJson(projectPath, template, features) {
   const packageJsonPath = path.join(projectPath, "package.json");
-  return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-}
-
-export function writePackageJson(projectPath, packageJson) {
-  const packageJsonPath = path.join(projectPath, "package.json");
-  fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, "utf8");
-}
-
-export function updatePackageJson(projectPath, language, features) {
-  const packageJson = readPackageJson(projectPath);
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
   packageJson.scripts = {
     ...packageJson.scripts,
     dev: "vite",
-    build: language === "ts" ? "tsc -b && vite build" : "vite build",
+    build: template === "ts" ? "tsc -b && vite build" : "vite build",
     preview: "vite preview",
   };
 
-  if (features.eslint) {
+  if (features.includes("eslint")) {
     packageJson.scripts.lint = "eslint .";
   } else {
     delete packageJson.scripts.lint;
   }
 
-  if (features.prettier) {
+  if (features.includes("prettier")) {
     packageJson.scripts.format = "prettier --write .";
     packageJson.scripts["format:check"] = "prettier --check .";
   } else {
@@ -47,20 +38,20 @@ export function updatePackageJson(projectPath, language, features) {
   packageJson.dependencies = packageJson.dependencies || {};
   packageJson.devDependencies = packageJson.devDependencies || {};
 
-  if (features.router) {
+  if (features.includes("router")) {
     packageJson.dependencies["react-router-dom"] = "^7.9.4";
   }
 
-  if (features.axios) {
+  if (features.includes("axios")) {
     packageJson.dependencies.axios = "^1.12.2";
   }
 
-  if (features.redux) {
+  if (features.includes("redux")) {
     packageJson.dependencies["@reduxjs/toolkit"] = "^2.9.0";
     packageJson.dependencies["react-redux"] = "^9.2.0";
   }
 
-  if (features.tailwind) {
+  if (features.includes("tailwind")) {
     packageJson.devDependencies.tailwindcss = "^4.1.12";
     packageJson.devDependencies["@tailwindcss/vite"] = "^4.1.12";
   } else {
@@ -68,23 +59,28 @@ export function updatePackageJson(projectPath, language, features) {
     delete packageJson.devDependencies["@tailwindcss/vite"];
   }
 
-  if (features.prettier) {
+  if (features.includes("prettier")) {
     packageJson.devDependencies.prettier = "^3.6.2";
   } else {
     delete packageJson.devDependencies.prettier;
   }
 
-  if (!features.eslint) {
+  if (!features.includes("eslint")) {
     for (const packageName of ESLINT_PACKAGES) {
       delete packageJson.devDependencies[packageName];
     }
   }
 
-  packageJson.dependencies = sortObject(packageJson.dependencies);
-  packageJson.devDependencies = sortObject(packageJson.devDependencies);
-  packageJson.scripts = sortObject(packageJson.scripts);
+  fs.writeFileSync(packageJsonPath, `${JSON.stringify(sortPackageJson(packageJson), null, 2)}\n`, "utf8");
+}
 
-  writePackageJson(projectPath, packageJson);
+function sortPackageJson(packageJson) {
+  return {
+    ...packageJson,
+    scripts: sortObject(packageJson.scripts || {}),
+    dependencies: sortObject(packageJson.dependencies || {}),
+    devDependencies: sortObject(packageJson.devDependencies || {}),
+  };
 }
 
 function sortObject(object) {

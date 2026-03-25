@@ -1,12 +1,15 @@
 import { checkbox, input, select } from "@inquirer/prompts";
-import { featureChoices } from "./project.js";
-import { normalizeProjectName, resolveLanguage, validateProjectName } from "./validation.js";
+import { COMPONENT_CHOICES } from "../config/components.js";
+import { FEATURE_CHOICES } from "../config/features.js";
+import { validateProjectName } from "./validation.js";
 
-export async function gatherProjectOptions({ projectName, flags }) {
-  const nextFlags = { ...flags };
+export async function gatherProjectOptions({ projectName, parsedFlags }) {
   let resolvedProjectName = projectName;
+  let template = parsedFlags.template;
+  let features = [...parsedFlags.features];
+  let components = parsedFlags.components;
 
-  if (!resolvedProjectName && flags.interactive) {
+  if (!resolvedProjectName && parsedFlags.interactive) {
     resolvedProjectName = await input({
       message: "Project name:",
       default: "my-react-app",
@@ -21,37 +24,37 @@ export async function gatherProjectOptions({ projectName, flags }) {
     throw new Error("A project name is required. Pass one as an argument or enable interactive mode.");
   }
 
-  if (!flags.js && !flags.ts && flags.interactive) {
-    const selection = await select({
+  if (!parsedFlags.template && parsedFlags.interactive) {
+    template = await select({
       message: "Choose a template:",
       choices: [
         { name: "JavaScript", value: "js" },
         { name: "TypeScript", value: "ts" },
       ],
     });
-
-    nextFlags.js = selection === "js";
-    nextFlags.ts = selection === "ts";
-  } else {
-    resolveLanguage(nextFlags);
   }
 
-  const hasFeatureFlag = featureChoices.some(({ value }) => Boolean(flags[value]));
-
-  if (!hasFeatureFlag && flags.interactive) {
-    const selectedFeatures = await checkbox({
+  if (features.length === 0 && parsedFlags.interactive) {
+    features = await checkbox({
       message: "Select starter features:",
-      choices: featureChoices,
+      choices: FEATURE_CHOICES,
       required: false,
     });
+  }
 
-    for (const feature of selectedFeatures) {
-      nextFlags[feature] = true;
-    }
+  if (components === undefined && parsedFlags.interactive) {
+    components = await checkbox({
+      message: "Select reusable components:",
+      choices: COMPONENT_CHOICES,
+      required: false,
+    });
   }
 
   return {
-    projectName: normalizeProjectName(resolvedProjectName),
-    flags: nextFlags,
+    projectName: resolvedProjectName,
+    template,
+    features,
+    components: components ?? [],
+    skipInstall: parsedFlags.skipInstall,
   };
 }

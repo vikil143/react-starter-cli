@@ -29,18 +29,6 @@ export function normalizeProjectName(value) {
   return value.trim();
 }
 
-export function resolveLanguage(flags) {
-  if (flags.js && flags.ts) {
-    throw new Error("Choose either --js or --ts, not both.");
-  }
-
-  if (flags.ts) {
-    return "ts";
-  }
-
-  return "js";
-}
-
 export function assertProjectPathAvailable(projectName) {
   const projectPath = path.resolve(process.cwd(), projectName);
 

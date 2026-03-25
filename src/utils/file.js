@@ -19,26 +19,14 @@ export function writeFiles(basePath, files) {
 export function removePaths(basePath, relativePaths) {
   for (const relativePath of relativePaths) {
     fs.rmSync(path.join(basePath, relativePath), {
-      force: true,
       recursive: true,
+      force: true,
     });
   }
 }
 
-export function ensureEmptyDirs(basePath, relativePaths) {
+export function ensureDirectories(basePath, relativePaths) {
   for (const relativePath of relativePaths) {
-    const dirPath = path.join(basePath, relativePath);
-    ensureDir(dirPath);
-
-    const entries = fs.readdirSync(dirPath).filter((entry) => entry !== ".gitkeep");
-    const keepFilePath = path.join(dirPath, ".gitkeep");
-
-    if (entries.length === 0) {
-      if (!fs.existsSync(keepFilePath)) {
-        fs.writeFileSync(keepFilePath, "", "utf8");
-      }
-    } else if (fs.existsSync(keepFilePath)) {
-      fs.rmSync(keepFilePath, { force: true });
-    }
+    ensureDir(path.join(basePath, relativePath));
   }
 }

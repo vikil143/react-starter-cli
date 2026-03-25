@@ -1,14 +1,15 @@
 import { Command } from "commander";
-import chalk from "chalk";
+import { COMPONENT_LABELS } from "../config/components.js";
+import { FEATURE_LABELS } from "../config/features.js";
+import { createProject } from "../generators/projectGenerator.js";
+import { parseFlagSelections, formatSelectionLabels } from "../utils/flags.js";
+import { printBanner, printError, printSuccess } from "../utils/logger.js";
 import { gatherProjectOptions } from "../utils/prompts.js";
 import {
   assertProjectPathAvailable,
   assertSupportedNodeVersion,
   normalizeProjectName,
-  resolveLanguage,
 } from "../utils/validation.js";
-import { createProject } from "../utils/project.js";
-import { printError, printSuccessBanner } from "../utils/messages.js";
 
 export function buildProgram() {
   const program = new Command();
@@ -17,6 +18,7 @@ export function buildProgram() {
     .name("react-starter-cli")
     .description("Generate a production-ready Vite React starter app")
     .argument("[project-name]", "Name of the project directory")
+    .option("--template <template>", "Template type: js or ts")
     .option("--js", "Use the JavaScript template")
     .option("--ts", "Use the TypeScript template")
     .option("--router", "Add React Router")
@@ -25,39 +27,38 @@ export function buildProgram() {
     .option("--tailwind", "Add Tailwind CSS")
     .option("--eslint", "Keep and configure ESLint")
     .option("--prettier", "Add Prettier config")
+    .option("--all", "Enable all supported features")
+    .option("--features <features>", "Comma-separated features list")
+    .option("--components <components>", "Comma-separated component list")
     .option("--skip-install", "Skip npm install after generating files")
     .option("--no-interactive", "Disable prompts for missing options")
     .action(async (projectNameArg, flags) => {
       try {
         assertSupportedNodeVersion();
+        printBanner();
 
-        console.log(chalk.cyan("\nReact Starter CLI v2\n"));
-
-        const inputOptions = await gatherProjectOptions({
+        const parsedFlags = parseFlagSelections(flags);
+        const options = await gatherProjectOptions({
           projectName: projectNameArg,
-          flags,
+          parsedFlags,
         });
 
-        const projectName = normalizeProjectName(inputOptions.projectName);
-        const language = resolveLanguage(inputOptions.flags);
+        const projectName = normalizeProjectName(options.projectName);
         const projectPath = assertProjectPathAvailable(projectName);
-
         const result = await createProject({
           projectName,
           projectPath,
-          language,
-          features: {
-            router: Boolean(inputOptions.flags.router),
-            axios: Boolean(inputOptions.flags.axios),
-            redux: Boolean(inputOptions.flags.redux),
-            tailwind: Boolean(inputOptions.flags.tailwind),
-            eslint: Boolean(inputOptions.flags.eslint),
-            prettier: Boolean(inputOptions.flags.prettier),
-          },
-          skipInstall: Boolean(inputOptions.flags.skipInstall),
+          template: options.template,
+          features: options.features,
+          components: options.components,
+          skipInstall: options.skipInstall,
         });
 
-        printSuccessBanner(result);
+        printSuccess({
+          ...result,
+          features: formatSelectionLabels(result.features, FEATURE_LABELS),
+          components: formatSelectionLabels(result.components, COMPONENT_LABELS),
+        });
       } catch (error) {
         printError(error);
         process.exit(1);
