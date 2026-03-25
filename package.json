@@ -1,16 +1,22 @@
 {
   "name": "react-starter-cli",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Generate a production-style Vite React starter with optional router, axios, redux, Tailwind, ESLint, and Prettier.",
+  "main": "src/commands/create.js",
   "bin": {
     "react-starter-cli": "./bin/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./bin/index.js"
+    "start": "node ./bin/index.js",
+    "test": "node --input-type=module -e \"import('./src/commands/create.js').then(() => console.log('CLI module loaded'))\""
   },
-  "keywords": [],
+  "keywords": [
+    "cli",
+    "react",
+    "vite",
+    "scaffold",
+    "starter"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
