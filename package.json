@@ -1,5 +1,5 @@
 {
-  "name": "react-starter-cli",
+  "name": "@vikil143/react-starter-cli",
   "version": "3.0.0",
   "description": "Generate a production-style Vite React starter with optional router, axios, redux, Tailwind, ESLint, and Prettier.",
   "main": "src/commands/create.js",
