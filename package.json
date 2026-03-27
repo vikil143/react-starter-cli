@@ -1,7 +1,7 @@
 {
   "name": "@vikil143/react-starter-cli",
   "version": "3.0.0",
-  "description": "Generate a production-style Vite React starter with optional router, axios, redux, Tailwind, ESLint, and Prettier.",
+  "description": "CLI to scaffold Vite React apps with JavaScript or TypeScript, React Router, Redux Toolkit, Axios, Tailwind CSS, ESLint, Prettier, and reusable UI components.",
   "main": "src/commands/create.js",
   "bin": {
     "react-starter-cli": "bin/index.js"
@@ -14,11 +14,30 @@
     "cli",
     "react",
     "vite",
+    "react-cli",
+    "react-starter",
+    "vite-react",
+    "vite-react-starter",
+    "react-boilerplate",
     "scaffold",
-    "starter"
+    "scaffolding",
+    "starter",
+    "typescript",
+    "javascript",
+    "react-router",
+    "redux-toolkit",
+    "tailwindcss"
   ],
-  "author": "",
+  "author": "Vikil Lakkavatri",
   "license": "ISC",
+  "homepage": "https://github.com/vikil143/react-starter-cli#readme",
+  "bugs": {
+    "url": "https://github.com/vikil143/react-starter-cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vikil143/react-starter-cli.git"
+  },
   "type": "module",
   "dependencies": {
     "@inquirer/prompts": "^8.3.2",
