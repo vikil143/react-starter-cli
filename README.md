@@ -31,11 +31,11 @@ A powerful **Node.js CLI tool** to generate scalable and production-ready **Reac
 
 ### Global install (recommended)
 
-npm install -g react-starter-cli
+npm install -g @vikil143/react-starter-cli
 
 ### Or use with npx
 
-npx react-starter-cli my-app
+npx @vikil143/react-starter-cli my-app
 
 ---
 
